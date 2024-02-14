@@ -5,6 +5,9 @@ import {PORT} from './config.js';
 
 const app = express();
 app.use(cors());
+app.use(express.json()); 
+
+
 app.get('/',(req, res) => {
     res.send('Bienvenido al Server')
 })
@@ -20,76 +23,49 @@ app.get('/clientes', async (req, res) => {
     }
   });
 
-// Crear un nuevo cliente
-app.post('/clientes', async (req, res) => {
+  // Crear un nuevo cliente
+  app.post('/clientes', async (req, res) => {
     try {
-        const { body } = req;
-        const query = `
-            INSERT INTO Clientes (Apellidos, Nombres, Direccion, Nit, TieneCredito, LimiteCredito, Telefono)
-            VALUES (?, ?, ?, ?, ?, ?, ?);
-        `;
-        const result = await pool.promise().query(query, [
-            body.Apellidos,
-            body.Nombres,
-            body.Direccion,
-            body.Nit,
-            body.TieneCredito,
-            body.LimiteCredito,
-            body.Telefono
-        ]);
-        res.json({ message: 'Cliente creado exitosamente', insertedId: result[0].insertId });
+        const { Apellidos, Nombres, Direccion, Nit, TieneCredito, LimiteCredito, Telefono } = req.body;
+        const [result] = await pool.promise().query(
+            'INSERT INTO Clientes (Apellidos, Nombres, Direccion, Nit, TieneCredito, LimiteCredito, Telefono) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [Apellidos, Nombres, Direccion, Nit, TieneCredito, LimiteCredito, Telefono]
+        );
+        res.json({ message: 'Cliente creado exitosamente', insertedId: result.insertId });
     } catch (error) {
         console.error('Error al crear cliente:', error);
         res.status(500).json({ error: 'Error al crear cliente' });
     }
 });
 
-// Actualizar un cliente por código
+// Actualizar un cliente por su código
 app.put('/clientes/:codigo', async (req, res) => {
     try {
         const { codigo } = req.params;
-        const { body } = req;
-        const query = `
-            UPDATE Clientes
-            SET
-                Apellidos = ?,
-                Nombres = ?,
-                Direccion = ?,
-                Nit = ?,
-                TieneCredito = ?,
-                LimiteCredito = ?,
-                Telefono = ?
-            WHERE Codigo = ?;
-        `;
-        const result = await pool.promise().query(query, [
-            body.Apellidos,
-            body.Nombres,
-            body.Direccion,
-            body.Nit,
-            body.TieneCredito,
-            body.LimiteCredito,
-            body.Telefono,
-            codigo
-        ]);
-        res.json({ message: 'Cliente actualizado exitosamente', affectedRows: result[0].affectedRows });
+        const { Apellidos, Nombres, Direccion, Nit, TieneCredito, LimiteCredito, Telefono } = req.body;
+        await pool.promise().query(
+            'UPDATE Clientes SET Apellidos=?, Nombres=?, Direccion=?, Nit=?, TieneCredito=?, LimiteCredito=?, Telefono=? WHERE Codigo=?',
+            [Apellidos, Nombres, Direccion, Nit, TieneCredito, LimiteCredito, Telefono, codigo]
+        );
+        res.json({ message: 'Cliente actualizado exitosamente' });
     } catch (error) {
         console.error('Error al actualizar cliente:', error);
         res.status(500).json({ error: 'Error al actualizar cliente' });
     }
 });
 
-// Eliminar un cliente por código
+// Eliminar un cliente por su código
 app.delete('/clientes/:codigo', async (req, res) => {
     try {
         const { codigo } = req.params;
-        const query = 'DELETE FROM Clientes WHERE Codigo = ?';
-        const result = await pool.promise().query(query, [codigo]);
-        res.json({ message: 'Cliente eliminado exitosamente', affectedRows: result[0].affectedRows });
+        await pool.promise().query('DELETE FROM Clientes WHERE Codigo = ?', [codigo]);
+        res.json({ message: 'Cliente eliminado exitosamente' });
     } catch (error) {
         console.error('Error al eliminar cliente:', error);
         res.status(500).json({ error: 'Error al eliminar cliente' });
     }
 });
+
 
 
 // Obtener todos los productos
