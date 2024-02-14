@@ -11,7 +11,7 @@ app.get('/',(req, res) => {
 // Obtener todos los clientes
 app.get('/clientes', async (req, res) => {
     try {
-      const [result] = await pool.promise().query('SELECT * FROM clientes');
+      const [result] = await pool.promise().query('SELECT * FROM Clientes');
       res.send(result[0]);
     } catch (error) {
       console.error('Error al obtener clientes:', error);
@@ -24,7 +24,7 @@ app.post('/clientes', async (req, res) => {
     try {
         const { body } = req;
         const query = `
-            INSERT INTO clientes (Apellidos, Nombres, Direccion, Nit, TieneCredito, LimiteCredito, Telefono)
+            INSERT INTO Clientes (Apellidos, Nombres, Direccion, Nit, TieneCredito, LimiteCredito, Telefono)
             VALUES (?, ?, ?, ?, ?, ?, ?);
         `;
         const result = await pool.promise().query(query, [
@@ -49,7 +49,7 @@ app.put('/clientes/:codigo', async (req, res) => {
         const { codigo } = req.params;
         const { body } = req;
         const query = `
-            UPDATE clientes
+            UPDATE Clientes
             SET
                 Apellidos = ?,
                 Nombres = ?,
@@ -81,7 +81,7 @@ app.put('/clientes/:codigo', async (req, res) => {
 app.delete('/clientes/:codigo', async (req, res) => {
     try {
         const { codigo } = req.params;
-        const query = 'DELETE FROM clientes WHERE Codigo = ?';
+        const query = 'DELETE FROM Clientes WHERE Codigo = ?';
         const result = await pool.promise().query(query, [codigo]);
         res.json({ message: 'Cliente eliminado exitosamente', affectedRows: result[0].affectedRows });
     } catch (error) {
@@ -94,7 +94,7 @@ app.delete('/clientes/:codigo', async (req, res) => {
 // Obtener todos los productos
 app.get('/productos', async (req, res) => {
     try {
-        const [rows] = await pool.promise().query('SELECT * FROM productos');
+        const [rows] = await pool.promise().query('SELECT * FROM Productos');
         res.send(rows);
     } catch (error) {
         console.error('Error al obtener productos:', error);
@@ -107,7 +107,7 @@ app.post('/productos', async (req, res) => {
     try {
         const { body } = req;
         const query = `
-            INSERT INTO productos (Nombre, PrecioCosto, Fletes, Categoria, Iva, PrecioVenta, Existencias)
+            INSERT INTO Productos (Nombre, PrecioCosto, Fletes, Categoria, Iva, PrecioVenta, Existencias)
             VALUES (?, ?, ?, ?, ?, ?, ?);
         `;
         const result = await pool.promise().query(query, [
@@ -132,7 +132,7 @@ app.put('/productos/:codigo', async (req, res) => {
         const { codigo } = req.params;
         const { body } = req;
         const query = `
-            UPDATE productos
+            UPDATE Productos
             SET
                 Nombre = ?,
                 PrecioCosto = ?,
@@ -164,7 +164,7 @@ app.put('/productos/:codigo', async (req, res) => {
 app.delete('/productos/:codigo', async (req, res) => {
     try {
         const { codigo } = req.params;
-        const query = 'DELETE FROM productos WHERE Codigo = ?';
+        const query = 'DELETE FROM Productos WHERE Codigo = ?';
         const result = await pool.promise().query(query, [codigo]);
         res.json({ message: 'Producto eliminado exitosamente', affectedRows: result[0].affectedRows });
     } catch (error) {
