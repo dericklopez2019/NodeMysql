@@ -13,7 +13,7 @@ app.get('/',(req, res) => {
 app.get('/clientes', async (req, res) => {
     try {
       const [result] = await pool.promise().query('SELECT * FROM Clientes');
-      res.send(result[0]);
+      res.send(result);
     } catch (error) {
       console.error('Error al obtener clientes:', error);
       res.status(500).json({ error: 'Error al obtener clientes' });
